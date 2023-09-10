@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ConnectionResiliency.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221211004253_mig_1")]
+    [DbContext(typeof(Test3DbContext))]
+    [Migration("20230910154050_mig_1")]
     partial class mig1
     {
         /// <inheritdoc />
