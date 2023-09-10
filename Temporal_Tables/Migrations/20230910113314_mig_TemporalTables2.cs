@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TemporalTables.Migrations
 {
     /// <inheritdoc />
-    public partial class mig2 : Migration
+    public partial class migTemporalTables2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
