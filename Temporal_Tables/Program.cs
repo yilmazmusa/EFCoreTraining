@@ -25,7 +25,7 @@ Test2DbContext context = new();
 #endregion
 #endregion
 
-#region Temporal Table'ı Test Edelim
+#region Temporal Table'ı Test Edelimmm
 
 #region Veri Eklerken
 //Temporal Table'a veri ekleme süreçlerinde herhangi bir kayıt atılmaz! ÇÜNKÜ Temporal Table'ın yapısı, var olan veirler üzerindeki zamansal değişimleri takip etmek üzerine kuruludur!
