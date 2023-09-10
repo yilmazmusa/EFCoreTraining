@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Reflection;
 
-ApplicationDbContext context = new();
+Test3DbContext context = new();
 
 #region Connection Resiliency Nedir?
 //EF Core üzerinde yapılan veritabanı çalışmaları sürecinde ister istemez veritabanı bağlantısında kopuşlar/kesintiler vs. meydana gelebilmektedir. 
@@ -13,13 +13,13 @@ ApplicationDbContext context = new();
 #region EnableRetryOnFailure
 //Uygulama sürecinde veritabanı bağlantısı koptuğu taktirde bu yapılandırma sayesinde bağlantıyı tekrardan kurmaya çalışabiliyirouz.
 
-//while (true)
-//{
-//    await Task.Delay(2000);
-//    var persons = await context.Persons.ToListAsync();
-//    persons.ForEach(p => Console.WriteLine(p.Name));
-//    Console.WriteLine("*******************");
-//}
+while (true)
+{
+    await Task.Delay(2000);
+    var persons = await context.Persons.ToListAsync();
+    persons.ForEach(p => Console.WriteLine(p.Name));
+    Console.WriteLine("*******************");
+}
 
 #region MaxRetryCount
 //Yeniden bağlantı sağlanması durumunun kaç kere gerçekleştirlecğeini bildirmektedir.
@@ -31,16 +31,17 @@ ApplicationDbContext context = new();
 #endregion
 #endregion
 
-#region Execution Strategies
+#region Execution Strategies 
+//Bağlantı koparsa sende yeniden bağlanmayı denersen bunun adına EF CORE da Execution Strategies denir.
 //EF Core ile yapılan bir işlem sürecinde veritabanı bağlatısı koptuğu taktirde yeniden bağlantı denenirken yapılan davranışa/alınan aksiyona Execution Strategy denmektedir.
 
 //Bu stratejiyi default dğerlerde kullanabieceğimiz gibi custom olarak da kendimize göre özelleştireibilir ve bağlantı koptuğu durumlarda istediğimiz aksiyonları alabiliriz.
 
 #region Default Execution Strategy
 //Eğer ki Connection Resiliency için EnableRetryOnFailure metodunu kullanıyorsak bu default execution stratgy karşılık gelecektir.
-//MaxRetryCoun : 6
-//Delay : 30
-//Default değerlerin kullanılailmesi için EnableRetryOnFailure metodunun parametresis overload'ının kullanılması gerekmektedir.
+//MaxRetryCount : 6
+//MaxRetryDelay : 30
+//Default değerlerin kullanılabilmesi için EnableRetryOnFailure metodunun parametresis overload'ının kullanılması gerekmektedir.
 #endregion
 #region Custom Execution Strategy
 
@@ -49,13 +50,13 @@ ApplicationDbContext context = new();
 #endregion
 #region Kullanma - ExecutionStrategy
 
-//while (true)
-//{
-//    await Task.Delay(2000);
-//    var persons = await context.Persons.ToListAsync();
-//    persons.ForEach(p => Console.WriteLine(p.Name));
-//    Console.WriteLine("*******************");
-//}
+while (true)
+{
+    await Task.Delay(2000);
+    var persons = await context.Persons.ToListAsync();
+    persons.ForEach(p => Console.WriteLine(p.Name));
+    Console.WriteLine("*******************");
+}
 #endregion
 
 #endregion
@@ -88,7 +89,7 @@ public class Person
     public int PersonId { get; set; }
     public string Name { get; set; }
 }
-class ApplicationDbContext : DbContext
+class Test3DbContext : DbContext
 {
     public DbSet<Person> Persons { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -97,21 +98,28 @@ class ApplicationDbContext : DbContext
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        #region Default Execution Strategy
-        //optionsBuilder.UseSqlServer("Server=localhost, 1433;Database=ApplicationDB;User ID=SA;Password=1q2w3e4r+!;TrustServerCertificate=True", builder => builder.EnableRetryOnFailure(
-        //    maxRetryCount: 5,
-        //    maxRetryDelay: TimeSpan.FromSeconds(15),
-        //    errorNumbersToAdd: new[] { 4060 }))
-        //    .LogTo(
-        //    filter: (eventId, level) => eventId.Id == CoreEventId.ExecutionStrategyRetrying,
-        //    logger: eventData =>
-        //    {
-        //        Console.WriteLine($"Bağlantı tekrar kurulmaktadır.");
-        //    });
+        #region DEFAULT Execution Strategy
+
+        optionsBuilder.UseSqlServer("Server=localhost\\sqlexpress;Database=Test3DB; User Id=sa; Password=Annem+.-1966; TrustServerCertificate=True", builder => builder.EnableRetryOnFailure(
+          maxRetryCount: 5, // 5 kere bağlanmayı dene
+          maxRetryDelay: TimeSpan.FromSeconds(15), //15 saniyede bir bağlanmayı dene
+          errorNumbersToAdd: new[] { 4060 }))
+          .LogTo(
+          filter: (eventId, level) => eventId == CoreEventId.ExecutionStrategyRetrying,
+          logger: (evetData =>
+          {
+              Console.WriteLine($"Bağlantı tekrar kurulmaktadır.");
+          })); // Bağlantı kesilirse direkt hata verme default ayarlarla DB ye tekrardan EnableRetryOnFailure ile  bağlanmaaya çalış diyoruz.Sonrasında da bu bağlantı kopukluğunun logunu tutuyoruz.Diyoruz ki önce dilter ile her şeyi loglama sadece yeniden bağlantı durumlarını logla diye filtreliyoruz sonra da logger ile logluyoruz.
+
         #endregion
-        #region Custom Execution Strategy
-        optionsBuilder.UseSqlServer("Server=localhost, 1433;Database=ApplicationDB;User ID=SA;Password=1q2w3e4r+!;TrustServerCertificate=True", builder => builder.ExecutionStrategy(dependencies => new CustomExecutionStrategy(dependencies, 10, TimeSpan.FromSeconds(15))));
+
+
+        #region CUSTOM Execution Strategy
+
+        optionsBuilder.UseSqlServer("Server=localhost\\sqlexpress;Database=Test3DB; User Id=sa; Password=Annem+.-1966; TrustServerCertificate=True", builder => builder.ExecutionStrategy(dependencies => new CustomExecutionStrategy(dependencies, maxRetryCount : 3, maxRetryDelay : TimeSpan.FromSeconds(15)))); // Bağlantı kesilirse direkt hata verme default ayarlarla DB ye tekrardan EnableRetryOnFailure ile  bağlanmaaya çalış diyoruz.Burda loglama yapmıyoruz çünkü burda CustomExecutionStrategy fonk ile ExecutionStrategy yapıyoruz bu fonk içinde log var zaten aşağıda 137. satır ve öncesi.
+
         #endregion
+
     }
 }
 
