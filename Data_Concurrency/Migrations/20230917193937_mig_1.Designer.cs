@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataConcurrency.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221215170527_mig_1")]
+    [DbContext(typeof(Application6DbContext))]
+    [Migration("20230917193937_mig_1")]
     partial class mig1
     {
         /// <inheritdoc />
@@ -32,6 +32,7 @@ namespace DataConcurrency.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PersonId"));
 
                     b.Property<string>("Name")
+                        .IsConcurrencyToken()
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

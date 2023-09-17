@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataConcurrency.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221215173212_mig_2")]
+    [DbContext(typeof(Application6DbContext))]
+    [Migration("20230917195232_mig_2")]
     partial class mig2
     {
         /// <inheritdoc />
