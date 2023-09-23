@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Transaction.Configurations;
 
+//Person
 public class PersonData : IEntityTypeConfiguration<Person>
 {
     public void Configure(EntityTypeBuilder<Person> builder)
@@ -22,6 +23,8 @@ public class PersonData : IEntityTypeConfiguration<Person>
         });
     }
 }
+
+//Order
 public class OrderData : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)
