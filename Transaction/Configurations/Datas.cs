@@ -25,6 +25,7 @@ public class PersonData : IEntityTypeConfiguration<Person>
 }
 
 //Order
+
 public class OrderData : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)
