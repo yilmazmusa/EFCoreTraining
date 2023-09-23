@@ -20,6 +20,7 @@ ApplicationDb8Context context = new();
 //Böylece SaveChanges tüm işlemlerin ya tamamen başarılı olacağını ya da bir hata oluşursa veritabanını değiştirmeden işlemleri sonlandıracağını ifade etmektedir.
 #endregion
 
+
 #region Transaction Kontrolünü Manuel Sağlama
 
 // IDbContextTransaction transaction= await context.Database.BeginTransactionAsync(); //BeginTransactionAsync() ile bir transaction başlattık onuda transactiona atadık sonrasında gerçekleşecek işlemler artık transactionda tutuluyor.Biz bu transactionu Commit() etmediğimiz sürece VERİTABANINA YANSIMAZ.Bunu da 31.satırda yaptık.
@@ -66,7 +67,6 @@ ApplicationDb8Context context = new();
 //    await context.SaveChangesAsync(); // BAK KAYDETTİK AMA HALA VERİTABANINA COMMİT ETMEDİK
 
 //    await transaction.CreateSavepointAsync("t1"); // Burda t1 anına geri dön diyoruz.
-
 //    Person? p10 = await context.Persons.FindAsync(10);
 //    context.Persons.Remove(p10);
 //    await context.SaveChangesAsync();
@@ -88,6 +88,7 @@ ApplicationDb8Context context = new();
 
 #endregion
 
+
 #region TransactionScope  
 //veritabanı işlemlerini bir grup olarak yapmamızı sağlayan bir sınıfıtr.
 //ADO.NET ile de kullanılabilir.
@@ -97,12 +98,14 @@ ApplicationDb8Context context = new();
 //..
 //..
 //transactionScope.Complete(); //Compote fonksiyonu yapılan veritabanı işlemlerinin commit edilmesini sağlar.
-//Eğer ki rollback yapacaksanız complete fonksiyonunun tetiklenmemesi yeterlidir!
+//Eğer ki rollback yapacaksanız complete fonksiyonunun tetiklenmemesi yeterlidir!!
 
 #region Complete
 
 #endregion
+
 #endregion
+
 
 public class Person
 {
