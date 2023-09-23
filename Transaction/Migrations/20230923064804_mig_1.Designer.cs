@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Transaction.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221220155918_mig_1")]
+    [DbContext(typeof(ApplicationDb8Context))]
+    [Migration("20230923064804_mig_1")]
     partial class mig1
     {
         /// <inheritdoc />
