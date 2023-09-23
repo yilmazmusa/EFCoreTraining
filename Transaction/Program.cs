@@ -136,3 +136,4 @@ class ApplicationDb8Context : DbContext
         optionsBuilder.UseSqlServer("Server=localhost\\sqlexpress;Database=Application8DB; User Id=sa; Password=Annem+.-1966; TrustServerCertificate=True");
     }
 }
+
