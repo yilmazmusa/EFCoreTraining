@@ -14,7 +14,7 @@ ApplicationDbContext context = new();
 
 //IQueryable ile yapılan sorgulama çalışmalarında sql sorguyu hedef verileri elde edecek şekilde generate edilecekken, IEnumerable ile yapılan sorgulama çalışmalarında sql daha geniş verileri getirebilecek şekilde execute edilerek hedef veriler in-memory'de ayıklanır.
 
-//IQueryable hedef verileri getirirken, hedef verilerden daha fazlasını getirip in-memory'de ayıklar.
+//IQueryable hedef verileri getirirken, IEnumarable  hedef verilerden daha fazlasını getirip in-memory'de ayıklar.
 
 #region IQueryable
 //var persons = await context.Persons.Where(p => p.Name.Contains("a"))
