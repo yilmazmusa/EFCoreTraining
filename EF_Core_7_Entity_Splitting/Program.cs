@@ -27,7 +27,7 @@ await context.SaveChangesAsync();
 #endregion
 
 #region Veri Okurken
-person = await context.Persons.FindAsync(2);
+person = await context.Persons.FindAsync(1);
 Console.WriteLine();
 #endregion
 
