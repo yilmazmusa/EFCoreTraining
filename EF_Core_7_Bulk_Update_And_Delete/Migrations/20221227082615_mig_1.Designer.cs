@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EFCore7BulkUpdateAndDelete.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(ApplicationDb9Context))]
     [Migration("20221227082615_mig_1")]
     partial class mig1
     {

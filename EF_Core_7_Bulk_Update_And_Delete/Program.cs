@@ -2,9 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-ApplicationDbContext context = new();
+ApplicationDb9Context context = new();
 
 #region EF Core 7 Öncesi Toplu Güncelleme
+
 //var persons = await context.Persons.Where(p => p.PersonId > 5).ToListAsync();
 //foreach (var person in persons)
 //{
@@ -12,6 +13,7 @@ ApplicationDbContext context = new();
 //}
 //await context.SaveChangesAsync();
 #endregion
+
 #region EF Core 7 Öncesi Toplu Silme
 //var persons = await context.Persons.Where(p => p.PersonId > 5).ToListAsync();
 //context.RemoveRange(persons);
@@ -19,13 +21,15 @@ ApplicationDbContext context = new();
 #endregion
 
 
-#region ExecuteUpdate
-//await context.Persons.Where(p => p.PersonId > 3).ExecuteUpdateAsync(p => p.SetProperty(p => p.Name, v => v.Name + " yeni"));
-//await context.Persons.Where(p => p.PersonId > 3).ExecuteUpdateAsync(p => p.SetProperty(p => p.Name, v => $"{v.Name} yeni"));
+#region ExecuteUpdate -EF7 SONRASI
+
+//await context.Persons.Where(p => p.PersonId > 5).ExecuteUpdateAsync(p => p.SetProperty(p => p.Name, v => v.Name + "YENİ")); //PersonId si 5 ten büyük olan Persons ların adının yanına yeni yazdık.
 #endregion
-#region ExecuteDelete
-//await context.Persons.Where(p => p.PersonId > 3).ExecuteDeleteAsync();
-#endregion
+#region ExecuteDelete - EF7 SONRASI
+
+//await context.Persons.Where(p => p.Name.Contains("a")).ExecuteDeleteAsync(); // Person.Name(isminde) içerisinde a geçenleri sildik.
+
+#endregion 
 
 //ExecuteUpdate ve ExecuteDelete fonksiyonları ile bulk(toplu) veri güncelleme ve silme işlemleri gerçekleştirirken SaveChanges fonksiyonunu çağırmanız gerekmemektedir. Çünkü b fonksiyonlar adları üzerinde Execute... fonksiyonlarıdır. Yani direkt verittaanına fiziksel etkide bulunurlar.
 
@@ -36,7 +40,7 @@ public class Person
     public int PersonId { get; set; }
     public string Name { get; set; }
 }
-class ApplicationDbContext : DbContext
+class ApplicationDb9Context : DbContext
 {
     public DbSet<Person> Persons { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,7 +49,6 @@ class ApplicationDbContext : DbContext
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder
-            .UseSqlServer("Server=localhost, 1433;Database=ApplicationDB;User ID=SA;Password=1q2w3e4r+!;TrustServerCertificate=True");
+        optionsBuilder.UseSqlServer("Server=localhost\\sqlexpress;Database=Application9DB; User Id=sa; Password=Annem+.-1966; TrustServerCertificate=True");
     }
 }
