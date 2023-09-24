@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-ApplicationDbContext context = new();
+ApplicationDb9Context context = new();
 
 #region EF Core Select Sorgularını Güçlendirme Teknikleri
 
@@ -16,27 +16,35 @@ ApplicationDbContext context = new();
 
 //IQueryable hedef verileri getirirken, IEnumarable  hedef verilerden daha fazlasını getirip in-memory'de ayıklar.
 
+// NOT: IQueryable ve IEnumerable davranışlar olarak aralarında farklar barındırlasalrda her ikiside Deterred Execution(GECİKMELİ ÇALIŞTIRMA) davranışı sergiler.Yani her iki arayüz üzerindende oluışturulan işlemi Execute edebilmek için .TolistAsync() gibi fonksiyonları veya ForEacah gibi tetikleyici işlemleri gerçekleştirmemiz gerekmektedir.
+
+
 #region IQueryable
-//var persons = await context.Persons.Where(p => p.Name.Contains("a"))
-//                             .Take(3)
-//                             .ToListAsync();
-
 
 //var persons = await context.Persons.Where(p => p.Name.Contains("a"))
-//                             .Where(p => p.PersonId > 3)
-//                             .Take(3)
-//                             .Skip(3)
-//                             .ToListAsync();
+//               .Take(3)
+//               .ToListAsync();
+
+//var persons1 = await context.Persons.Where(p => p.Name.Contains("a"))
+//               .Where(p => p.PersonId > 3)
+//               .Take(3)
+//               .Skip(3)
+//               .ToListAsync();
+
+//Console.WriteLine();
 
 #endregion
+// IEnumerable türde sorguyu IQueryable' a çevirir.
 #region IEnumerable
-//var persons = context.Persons.Where(p => p.Name.Contains("a"))
-//                             .AsEnumerable()
-//                             .Take(3)
-//                             .ToList();
+
+//var persons =  context.Persons.Where(p => p.Name.Contains("a"))
+//               .AsEnumerable()
+//               .Take(3)
+//               .ToList(); //Burda sorguya where i ekler ama take i eklemez .ünkü öncesinde sorgu  AsEnumerable() ile IEnumerable türüne çekildi.
 #endregion
 
 #region AsQueryable
+// IQueryable türde sorguyu IEnumerable' e çevirir.
 
 #endregion
 #region AsEnumerable
@@ -45,43 +53,50 @@ ApplicationDbContext context = new();
 #endregion
 
 #region Yalnızca İhtiyaç Olan Kolonları Listeleyin - Select
+
 //var persons = await context.Persons.Select(p => new
 //{
-//    p.Name
+//    Name = p.Name
 //}).ToListAsync();
+
+//Console.WriteLine();
+
 #endregion
 
 #region Result'ı Limitleyin - Take
-//await context.Persons.Take(50).ToListAsync();
+
+//var persons = await context.Persons.Take(100).ToListAsync(); //TOP 100 YANİ
+
 #endregion
 
 #region Join Sorgularında Eager Loading Sürecinde Verileri Filtreleyin
-//var persons = await context.Persons.Include(p => p.Orders
-//                                                  .Where(o => o.OrderId % 2 == 0)
-//                                                  .OrderByDescending(o => o.OrderId)
-//                                                  .Take(4))
-//    .ToListAsync();
 
-//foreach (var person in persons)
-//{
-//    var orders = person.Orders.Where(o => o.CreatedDate.Year == 2022);
-//}
+//var persons = await context.Persons.Include(p => p.Orders
+//                                                .Where(O => O.OrderId % 2 == 0)
+//                                                .OrderByDescending(o => o.OrderId)
+//                                                .Take(2))
+//                                                .ToListAsync();
+
 
 #endregion
 
 #region Şartlara Bağlı Join Yapılacaksa Eğer Explicit Loading Kullanın
-//var person = await context.Persons.Include(p => p.Orders).FirstOrDefaultAsync(p => p.PersonId == 1);
-//var person = await context.Persons.FirstOrDefaultAsync(p => p.PersonId == 1);
+//var person = await context.Persons.Include(p => p.Orders).FirstOrDefaultAsync(p => p.PersonId == 1); //Yanlış Niye yanlış gelen Personlardan Name i Ayşe olanların Order larını getirmek istiyoruz.Bunun için en baştan iki tabloyu bağlamak sonra Person.name i Ayşe olanların Orderlarını getirmek mantıksız ve maliyetli.O yüzden önce Personları getiririz.Sonra bu Personlardan Name i Ayşe olan varsa(İf ile kontrol edip) onun Orderlarını getiririz.
+//var person = await context.Persons.FirstOrDefaultAsync(p => p.PersonId == 1);     // Doğru
 
 //if (person.Name == "Ayşe")
 //{
-//    //Order'larını getir...
-//    await context.Entry(person).Collection(p => p.Orders).LoadAsync();
+//    //Orderları getir.
+//   var personOrders =  context.Persons.Entry(person).Collection(p => p.Orders).LoadAsync();
+
 //}
+
+//Console.WriteLine(person.Name);
 #endregion
 
 #region Lazy Loading Kullanırken Dikkatli Olun!
 #region Riskli Durum
+//Yapılmaması gereken bir durum
 //var persons = await context.Persons.ToListAsync();
 
 //foreach (var person in persons)
@@ -93,18 +108,21 @@ ApplicationDbContext context = new();
 //    Console.WriteLine("***********");
 //}
 #endregion
-#region İdeal Durum
-//var persons = await context.Persons.Select(p => new { p.Name, p.Orders }).ToListAsync();
+
+ #region İdeal Durum
+
+//var persons = await context.Persons.Select( p => new {p.Name, p.Orders}).ToListAsync();
 
 //foreach (var person in persons)
 //{
 //    foreach (var order in person.Orders)
 //    {
-//        Console.WriteLine($"{person.Name} - {order.OrderId}");
+//        Console.WriteLine($"{ person.Name} - { order.OrderId}");
 //    }
-//    Console.WriteLine("***********");
+//    Console.WriteLine("+++++++++++++++++++++++++++");
 //}
 #endregion
+
 #endregion
 
 #region İhtiyaç Noktalarında Ham SQL Kullanın - FromSql
@@ -132,7 +150,7 @@ public class Order
 
     public virtual Person Person { get; set; }
 }
-class ApplicationDbContext : DbContext
+class ApplicationDb9Context : DbContext
 {
     public DbSet<Person> Persons { get; set; }
     public DbSet<Order> Orders { get; set; }
@@ -140,15 +158,11 @@ class ApplicationDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        modelBuilder.Entity<Person>()
-            .HasMany(p => p.Orders)
-            .WithOne(o => o.Person)
-            .HasForeignKey(o => o.PersonId);
+
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder
-            .UseSqlServer("Server=localhost, 1433;Database=ApplicationDB;User ID=SA;Password=1q2w3e4r+!;TrustServerCertificate=True")
+        optionsBuilder.UseSqlServer("Server=localhost\\sqlexpress;Database=Application9DB; User Id=sa; Password=Annem+.-1966; TrustServerCertificate=True")
             .UseLazyLoadingProxies();
     }
 }
