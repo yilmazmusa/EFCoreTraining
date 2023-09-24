@@ -2,31 +2,35 @@
 
 using Microsoft.EntityFrameworkCore;
 
-ApplicationDbContext context = new();
+Application10DbContext context = new();
 
 #region Entity Splitting
-//Birden fazla fiziksel tabloyu Entity Framework Core kısmında tek bir entity ile temsil etmemizi sağlayan bir özelliktir.
+//Veritabanındaki Birden fazla fiziksel tabloyu Entity Framework Core kısmında tek bir entity ile temsil etmemizi sağlayan bir özelliktir.
 #endregion
+
 #region Örnek
+
 #region Veri Eklerken
 Person person = new()
 {
-    Name = "Nevin",
-    Surname = "Yıldız",
+    Name = "Musa",
+    Surname = "Yılmaz",
     City = "Ankara",
     Country = "Türkiye",
-    PhoneNumber = "1234567890",
-    PostCode = "1234567890",
-    Street = "..."
+    PhoneNumber = "5458749658",
+    PostCode = "0684",
+    Street = "11.Cadde"
 };
 
-//await context.Persons.AddAsync(person);
-//await context.SaveChangesAsync();
+await context.Persons.AddAsync(person);
+await context.SaveChangesAsync();
 #endregion
+
 #region Veri Okurken
 person = await context.Persons.FindAsync(2);
 Console.WriteLine();
 #endregion
+
 #endregion
 public class Person
 {
@@ -46,7 +50,7 @@ public class Person
     public string Country { get; set; }
     #endregion
 }
-class ApplicationDbContext : DbContext
+class Application10DbContext : DbContext
 {
     public DbSet<Person> Persons { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -66,12 +70,12 @@ class ApplicationDbContext : DbContext
                     tableBuilder.Property(person => person.City);
                     tableBuilder.Property(person => person.PostCode);
                     tableBuilder.Property(person => person.Country);
+
                 });
         });
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder
-            .UseSqlServer("Server=localhost, 1433;Database=ApplicationDB;User ID=SA;Password=1q2w3e4r+!;TrustServerCertificate=True");
+        optionsBuilder.UseSqlServer("Server=localhost\\sqlexpress;Database=Application10DB; User Id=sa; Password=Annem+.-1966; TrustServerCertificate=True");
     }
 }
